@@ -134,7 +134,8 @@ def preprocess_data(data_path, labels_path=None):
     features = ['reanalysis_specific_humidity_g_per_kg', 
                  'reanalysis_dew_point_temp_k', 
                  'station_avg_temp_c', 
-                 'station_min_temp_c']
+                 'station_min_temp_c',
+                 'reanalysis_min_air_temp_k']
     df = df[features]
 
     # add labels to dataframe
@@ -147,8 +148,8 @@ def preprocess_data(data_path, labels_path=None):
     iq = df.loc['iq']
     
     # fill missing values
-    avg_sj = sj.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_avg_temp_c':'mean', 'station_min_temp_c':'mean'})
-    avg_iq = iq.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_avg_temp_c':'mean', 'station_min_temp_c':'mean'})
+    avg_sj = sj.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_avg_temp_c':'mean', 'station_min_temp_c':'mean', 'reanalysis_min_air_temp_k':'mean'})
+    avg_iq = iq.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_avg_temp_c':'mean', 'station_min_temp_c':'mean', 'reanalysis_min_air_temp_k':'mean'})
 
     avg_t_sj = sj.mean()
     avg_t_iq = iq.mean()
@@ -179,7 +180,8 @@ def preprocess_data_test(data_path, labels_path=None):
     features = ['reanalysis_specific_humidity_g_per_kg', 
                  'reanalysis_dew_point_temp_k', 
                  'station_avg_temp_c', 
-                 'station_min_temp_c']
+                 'station_min_temp_c',
+                 'reanalysis_min_air_temp_k']
     df = df[features]
 
     # add labels to dataframe
@@ -234,7 +236,8 @@ def get_best_model(train, test):
                     "reanalysis_specific_humidity_g_per_kg + " \
                     "reanalysis_dew_point_temp_k + " \
                     "station_min_temp_c + " \
-                    "station_avg_temp_c"
+                    "station_avg_temp_c + " \
+                    "reanalysis_min_air_temp_k"
     
     grid = 10 ** np.arange(-8, -3, dtype=np.float64)
                     
