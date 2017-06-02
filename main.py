@@ -6,10 +6,10 @@ from __future__ import division
 import pandas as pd
 import numpy as np
 
-from matplotlib import pyplot as plt
-import seaborn as sns
+# from matplotlib import pyplot as plt
+# import seaborn as sns
 
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 import statsmodels.api as sm
 
 # just for the sake of this blog post!
@@ -126,31 +126,44 @@ import math
 ##     .barh())
 
 #In 19
-def preprocess_data(data_path, labels_path=None):
-    # load data and set index to city, year, weekofyear
-    df = pd.read_csv(data_path, index_col=[0, 1, 2])
-    
-    # select features we want
-    features = ['reanalysis_specific_humidity_g_per_kg', 
+
+features_sj = ['reanalysis_specific_humidity_g_per_kg', 
+             'reanalysis_dew_point_temp_k', 
+             'station_avg_temp_c', 
+             'reanalysis_max_air_temp_k']
+
+features_iq = ['reanalysis_specific_humidity_g_per_kg', 
+             'reanalysis_dew_point_temp_k',  
+             'station_min_temp_c',
+             'reanalysis_min_air_temp_k']
+
+features = ['reanalysis_specific_humidity_g_per_kg', 
                  'reanalysis_dew_point_temp_k', 
                  'station_avg_temp_c', 
                  'station_min_temp_c',
                  'reanalysis_min_air_temp_k',
-                 'reanalysis_max_air_temp_k']
-    df = df[features]
+                 'reanalysis_max_air_temp_k']                          
+
+def preprocess_data(data_path, labels_path=None):
+	# load data and set index to city, year, weekofyear
+    df = pd.read_csv(data_path, index_col=[0, 1, 2])
+
+    sj = df[features_sj]
+    iq = df[features_iq]
 
     # add labels to dataframe
     if labels_path:
         labels = pd.read_csv(labels_path, index_col=[0, 1, 2])
-        df = df.join(labels)
-    
+        sj = sj.join(labels)
+        iq = iq.join(labels)
+
     # separate san juan and iquitos
-    sj = df.loc['sj']
-    iq = df.loc['iq']
-    
+    sj = sj.loc['sj']
+    iq = iq.loc['iq']
+
     # fill missing values
-    avg_sj = sj.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_avg_temp_c':'mean', 'station_min_temp_c':'mean', 'reanalysis_min_air_temp_k':'mean', 'reanalysis_max_air_temp_k':'mean'})
-    avg_iq = iq.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_avg_temp_c':'mean', 'station_min_temp_c':'mean', 'reanalysis_min_air_temp_k':'mean', 'reanalysis_max_air_temp_k':'mean'})
+    avg_sj = sj.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_avg_temp_c':'mean', 'reanalysis_max_air_temp_k':'mean'})
+    avg_iq = iq.groupby(by='total_cases').agg({'reanalysis_specific_humidity_g_per_kg':'mean', 'reanalysis_dew_point_temp_k':'mean', 'station_min_temp_c':'mean', 'reanalysis_min_air_temp_k':'mean'})
 
     avg_t_sj = sj.mean()
     avg_t_iq = iq.mean()
@@ -177,13 +190,6 @@ def preprocess_data_test(data_path, labels_path=None):
     # load data and set index to city, year, weekofyear
     df = pd.read_csv(data_path, index_col=[0, 1, 2])
     
-    # select features we want
-    features = ['reanalysis_specific_humidity_g_per_kg', 
-                 'reanalysis_dew_point_temp_k', 
-                 'station_avg_temp_c', 
-                 'station_min_temp_c',
-                 'reanalysis_min_air_temp_k',
-                 'reanalysis_max_air_temp_k']
     df = df[features]
 
     # add labels to dataframe
@@ -232,15 +238,22 @@ iq_train_subtest = iq_train.tail(iq_train.shape[0] - 400)
 from statsmodels.tools import eval_measures
 import statsmodels.formula.api as smf
 
-def get_best_model(train, test):
+def get_best_model(train, test, loc):
     # Step 1: specify the form of the model
-    model_formula = "total_cases ~ 1 + " \
-                    "reanalysis_specific_humidity_g_per_kg + " \
-                    "reanalysis_dew_point_temp_k + " \
-                    "station_min_temp_c + " \
-                    "station_avg_temp_c + " \
-                    "reanalysis_min_air_temp_k + " \
-                    "reanalysis_max_air_temp_k"
+
+    if(loc=="sj"):
+    	model_formula = "total_cases ~ 1 + " \
+	                    "reanalysis_specific_humidity_g_per_kg + " \
+	                    "reanalysis_dew_point_temp_k + " \
+	                    "station_avg_temp_c + " \
+	                    "reanalysis_max_air_temp_k"
+
+    elif(loc=="iq"):
+    	model_formula = "total_cases ~ 1 + " \
+	                    "reanalysis_specific_humidity_g_per_kg + " \
+	                    "reanalysis_dew_point_temp_k + " \
+	                    "station_min_temp_c + " \
+	                    "reanalysis_min_air_temp_k"
     
     grid = 10 ** np.arange(-8, -3, dtype=np.float64)
                     
@@ -273,21 +286,21 @@ def get_best_model(train, test):
     fitted_model = model.fit()
     return fitted_model
     
-sj_best_model = get_best_model(sj_train_subtrain, sj_train_subtest)
-iq_best_model = get_best_model(iq_train_subtrain, iq_train_subtest)
+sj_best_model = get_best_model(sj_train_subtrain, sj_train_subtest, 'sj')
+iq_best_model = get_best_model(iq_train_subtrain, iq_train_subtest, 'iq')
 
 #In 25
-figs, axes = plt.subplots(nrows=2, ncols=1)
+# figs, axes = plt.subplots(nrows=2, ncols=1)
 
 # plot sj
-sj_train['fitted'] = sj_best_model.fittedvalues
-sj_train.fitted.plot(ax=axes[0], label="Predictions")
-sj_train.total_cases.plot(ax=axes[0], label="Actual")
+# sj_train['fitted'] = sj_best_model.fittedvalues
+# sj_train.fitted.plot(ax=axes[0], label="Predictions")
+# sj_train.total_cases.plot(ax=axes[0], label="Actual")
 
 # plot iq
-iq_train['fitted'] = iq_best_model.fittedvalues
-iq_train.fitted.plot(ax=axes[1], label="Predictions")
-iq_train.total_cases.plot(ax=axes[1], label="Actual")
+# iq_train['fitted'] = iq_best_model.fittedvalues
+# iq_train.fitted.plot(ax=axes[1], label="Predictions")
+# iq_train.total_cases.plot(ax=axes[1], label="Actual")
 
 ##plt.suptitle("Dengue Predicted Cases vs. Actual Cases")
 ##plt.legend()
