@@ -49,7 +49,6 @@ def preprocess_data(data_path, labels_path=None):
     # select features we want
     features = ['reanalysis_specific_humidity_g_per_kg', 
              'reanalysis_dew_point_temp_k',  
-             'station_min_temp_c',
              'reanalysis_min_air_temp_k']
 
     df = df[features]
@@ -83,7 +82,6 @@ def get_best_model(train, test):
     model_formula = "total_cases ~ 1 + " \
                         "reanalysis_specific_humidity_g_per_kg + " \
                         "reanalysis_dew_point_temp_k + " \
-                        "station_min_temp_c + " \
                         "reanalysis_min_air_temp_k"
     
     grid = 10 ** np.arange(-8, -3, dtype=np.float64)
