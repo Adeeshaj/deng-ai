@@ -1,7 +1,6 @@
 # deng-ai
-CS3230 - Data Minning Group Project
 
-Task is to compete in [DengAI: Predicting Disease Spread](https://www.drivendata.org/competitions/44/dengai-predicting-disease-spread/) competition
+This repository contains the data minning and predicion codes used for [DengAI: Predicting Disease Spread](https://www.drivendata.org/competitions/44/dengai-predicting-disease-spread/) competition
 
 Group name is DVios-UOMCSE13
 
