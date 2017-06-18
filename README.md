@@ -11,7 +11,7 @@ Group name is DVios-UOMCSE13
 
 ## Data Preprocessing Approaches
 * Filling the missing values with latest value, attribute mean, class mean
-* Time shifting the data
+* Linear interpolation
 
 ## Prediction 
 * Negative Binomial
@@ -25,3 +25,5 @@ Group name is DVios-UOMCSE13
 * Updating the model again using the best set of predicted values imporved the accuracy
 
 * Reducing the features to top 3 incresed the accuracy of predicted data.
+
+* Time shifting the data
