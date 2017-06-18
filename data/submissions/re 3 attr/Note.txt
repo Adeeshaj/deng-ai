@@ -1,0 +1,3 @@
+Used test data again to train the model
+Used only top 3 attributes
+Used the 3/3 for model building and 1/3 for model testing

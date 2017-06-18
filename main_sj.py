@@ -67,7 +67,6 @@ def preprocess_data(data_path, labels_path=None):
     if labels_path:
         labels = pd.read_csv(labels_path, index_col=[0, 1, 2])
         df = df.join(labels)
-    
     # separate san juan and iquitos
     sj = df.loc['sj']
     
@@ -77,7 +76,8 @@ def preprocess_data(data_path, labels_path=None):
 sj_train = preprocess_data('data/dengue_features_train.csv',
                                     labels_path="data/dengue_labels_train.csv")
 #In 23
-sj_train_subtrain = sj_train.head(800)
+sj_train_subtrain = sj_train
+#sj_train_subtrain = sj_train.head(800)
 sj_train_subtest = sj_train.tail(sj_train.shape[0] - 800)
 
 #In 24

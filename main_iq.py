@@ -70,7 +70,9 @@ def preprocess_data(data_path, labels_path=None):
 iq_train = preprocess_data('data/dengue_features_train.csv',
                                     labels_path="data/dengue_labels_train.csv")
 
-iq_train_subtrain = iq_train.head(400)
+
+iq_train_subtrain = iq_train
+#iq_train_subtrain = iq_train.head(400)
 iq_train_subtest = iq_train.tail(iq_train.shape[0] - 400)
 
 #In 24
